@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    environment:
+      POSTGRES_USER: kansiri
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: jobInterview
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.nodejs
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://kansiri:1234@postgres:5432/jobInterview

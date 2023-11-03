@@ -1,21 +1,23 @@
-const express = require('express');
-const app = express();
-const port = process.env.PORT || 3000;
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
-const api = require('./src/api/index')
+const express = require('express')
+const passport = require('passport')
 
-// Middleware to parse JSON requests
+const app = express()
+
 app.use(express.json());
 
-// Define a simple route
+app.use(passport.initialize())
+require('./src/middlewares/authentication')(app, passport)
+
+const api = require('./src/api/index')
+
 app.get('/', (req, res) => {
     res.send('Hello, Express!');
 });
 
 app.use('/api', api)
 
-// Start the server
+const port = process.env.PORT || 3000
+
 app.listen(port, async () => {
     console.log(`Server is running on port ${port}`)
 });

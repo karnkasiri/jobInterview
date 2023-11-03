@@ -1,15 +1,15 @@
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
-
+const { generatePasswordHash } = require('./bcrypt.service')
 
 const create = async () => {
     try {
-
+        const passwordHash = await generatePasswordHash("1234")
         const newUser = await prisma.user.create({
             data: {
-                username: "User123",
-                password: "1234",
-                email: "user@email.com",
+                username: "user12345",
+                password: passwordHash,
+                email: "user2@email.com",
                 role: "admin"
             },
         });

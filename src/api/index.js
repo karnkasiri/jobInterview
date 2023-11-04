@@ -6,7 +6,8 @@ const commentController = require('../controller/comment.controller')
 const {
     checkAuth,
     checkRole,
-    checkUserOwner
+    checkUserOwner,
+    checkCommentOwner
 } = require('../middlewares/authorize')
 
 
@@ -25,8 +26,12 @@ router.post('/schedule', scheduleController.create)
 router.get('/schedule', scheduleController.getAllScheduleCards)
 router.get('/schedule/detail/:id', scheduleController.getScheduleCardDetail)
 router.put('/schedule/:id', scheduleController.update)
+router.delete('/schedule/:id', scheduleController.deleteSchedule)
 
 //Comment API
 router.post('/comment', commentController.create)
+router.get('/comment/:id', commentController.getComment)
+router.put('/comment/:id', checkCommentOwner, commentController.update)
+router.delete('/comment/:id', checkCommentOwner, commentController.deleteComment)
 
 module.exports = router;

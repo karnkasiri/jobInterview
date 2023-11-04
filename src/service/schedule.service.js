@@ -99,10 +99,28 @@ const getScheduleDetail = async (id, username) => {
     }
 }
 
+const deleteSchedule = async (id) => {
+    try {
+        const deleteUserSchedule = await prisma.userSchedule.deleteMany({
+            where: { scheduleId: id }
+        })
+
+        const deleteSchedule = await prisma.schedule.delete({
+            where: { id }
+        })
+
+        return deleteSchedule
+
+    } catch (error) {
+        console.log(error)
+        throw new Error(error)
+    }
+}
 
 module.exports = {
     create,
     update,
+    deleteSchedule,
     getAllScheduleCards,
     getScheduleDetail
 }

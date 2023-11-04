@@ -1,4 +1,6 @@
 const jwt = require('jsonwebtoken')
+const { PrismaClient } = require('@prisma/client')
+const prisma = new PrismaClient()
 const { getSecretKey } = require('../utils/utils')
 const secretKey = getSecretKey()
 
@@ -11,6 +13,13 @@ const checkAuth = (req, res, next) => {
         if (err) {
             console.log(err)
             return res.status(401).json({ message: 'Unauthorized: Missing or Invalid Token' })
+        }
+
+        const currentTime = Math.floor(Date.now())
+        const exp = decoded.exp + (3600 * 1000)
+        
+        if (decoded.exp && exp < currentTime) {
+            return res.status(401).json({ message: 'Token has expired' })
         }
 
         req.id = decoded.id
@@ -39,8 +48,25 @@ const checkUserOwner = (req, res, next) => {
     return res.status(403).json({ message: 'Forbidden: Access Denied' })
 }
 
+const checkCommentOwner = async (req, res, next) => {
+    const username = req.username
+    const id = req.params.id
+
+    const comment = await prisma.comment.findUnique({
+        where: { id }
+    })
+
+    const createdBy = comment.createdBy
+
+    if (createdBy && createdBy === username) {
+        return next()
+    }
+    return res.status(403).json({ message: 'Forbidden: Access Denied' })
+}
+
 module.exports = {
     checkAuth,
     checkRole,
-    checkUserOwner
+    checkUserOwner,
+    checkCommentOwner
 }

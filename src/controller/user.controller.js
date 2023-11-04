@@ -34,6 +34,10 @@ const update = async (req, res, next) => {
     try {
         const id = req.params.id
         const dataUpdate = req.body
+        if (!id) {
+            return utils.sendResError(res, 'Invalid Request: id is required.')
+        }
+        
         const data = await userService.update(id, dataUpdate)
 
         return res.status(200).send({
@@ -49,6 +53,10 @@ const update = async (req, res, next) => {
 const deleteUser = async (req, res, next) => {
     try {
         const id = req.params.id
+        if (!id) {
+            return utils.sendResError(res, 'Invalid Request: id is required.')
+        }
+
         const data = await userService.deleteUser(id)
 
         return res.status(200).send({
@@ -64,6 +72,10 @@ const deleteUser = async (req, res, next) => {
 const userInfo = async (req, res, next) => {
     try {
         const id = req.params.id
+        if (!id) {
+            return utils.sendResError(res, 'Invalid Request: id is required.')
+        }
+
         const data = await userService.userInfo(id)
 
         return res.status(200).send({

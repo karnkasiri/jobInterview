@@ -55,9 +55,7 @@ const getScheduleCardDetail = async (req, res, next) => {
 
         return res.status(200).send({
             message: "success",
-            data: {
-                data,
-            },
+            data
         });
     } catch (error) {
         console.log(error)
@@ -79,10 +77,27 @@ const update = async (req, res, next) => {
 
         return res.status(200).send({
             message: "success",
-            data: {
-                data,
-            },
-        });
+            data
+        })
+    } catch (error) {
+        console.log(error)
+        return res.status(400);
+    }
+}
+
+const deleteSchedule = async (req, res, next) => {
+    try {
+        const id = req.params.id
+        if (!id) {
+            return utils.sendResError(res, 'Invalid Request: id is required.')
+        }
+
+        const data = await scheduleService.deleteSchedule(id)
+
+        return res.status(200).send({
+            message: "success",
+            data
+        })
     } catch (error) {
         console.log(error)
         return res.status(400);
@@ -92,10 +107,10 @@ const update = async (req, res, next) => {
 
 
 
-
 module.exports = {
     create,
     update,
+    deleteSchedule,
     getAllScheduleCards,
     getScheduleCardDetail
 }

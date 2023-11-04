@@ -1,21 +1,17 @@
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
-const create = async () => {
+const create = async (comment) => {
     try {
 
         const newComment = await prisma.comment.create({
-            data: {
-                text: 'comment ja',
-                status: 'ACTIVE',
-                createdBy: 'User123',
-                updatedBy: 'User123',
-            },
+            data: comment,
         });
         return newComment
 
     } catch (error) {
         console.log(error)
+        throw new Error(error)
     }
 }
 

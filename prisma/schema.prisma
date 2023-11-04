@@ -11,7 +11,7 @@ datasource db {
 }
 
 model User {
-  id        String   @default(uuid()) @unique
+  id        String   @id @default(uuid())
   username  String   @unique
   password  String
   email     String   
@@ -22,7 +22,7 @@ model User {
 }
 
 model Schedule {
-  id          String   @default(uuid()) @unique
+  id          String   @id @default(uuid())
   title       String   
   description String
   status      Status   
@@ -36,7 +36,7 @@ model Schedule {
 }
 
 model UserSchedule {
-  id          String   @default(uuid()) @unique
+  id          String   @id @default(uuid())
   schedule    Schedule?          @relation(fields: [scheduleId], references: [id])
   scheduleId  String?
   user        User?              @relation(fields: [userId], references: [id])
@@ -46,9 +46,9 @@ model UserSchedule {
 }
 
 model Comment {
-  id          String   @default(uuid()) @unique
+  id          String   @id @default(uuid())
   text        String   
-  status      String  
+  status      CommentStatus @default(ACTIVE)
   createdBy   String
   updatedBy   String
   createdAt   DateTime @default(now())
@@ -58,9 +58,9 @@ model Comment {
 }
 
 model ScheduleHistory {
-  id          String   @default(uuid()) @unique
+  id          String   @id @default(uuid())
   title       String   
-  descrition  String 
+  description  String 
   status      Status  
   createdBy   String
   updatedBy   String
@@ -75,4 +75,9 @@ enum Status {
     TODO
     INPROGRES
     DONE
+}
+
+enum CommentStatus {
+    ACTIVE
+    INACTIVE
 }

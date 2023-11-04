@@ -1,23 +1,25 @@
 const LocalStrategy = require('passport-local').Strategy
 const { PrismaClient } = require('@prisma/client')
-const jwt = require('jsonwebtoken')
 const prisma = new PrismaClient()
-const { comparePassword } = require('../service/bcrypt.service')
+const jwt = require('jsonwebtoken')
+const {
+  comparePassword,
+  getSecretKey
+} = require('../utils/utils')
 
 module.exports = function (app, passport) {
-  const secretKey = 'uwqXMX6mdG'
+  const secretKey = getSecretKey()
   passport.use(new LocalStrategy(
     {
-      usernameField: 'username',
+      usernameField: 'usernameOrEmail',
       passwordField: 'password',
     },
-    async (username, password, done) => {
+    async (usernameOrEmail, password, done) => {
       try {
-        const user = await prisma.user.findUnique({
-          where: {
-            username: username,
-          },
-        });
+
+        const user = await prisma.user.findFirst({
+          where: { OR: [{ username: usernameOrEmail }, { email: usernameOrEmail }] }
+        })
 
         if (!user) {
           return done(null, false, { message: 'User not found' });
@@ -46,6 +48,7 @@ module.exports = function (app, passport) {
       }
 
       const payload = {
+        id: user.id,
         username: user.username,
         email: user.email,
         role: user.role,
@@ -53,13 +56,6 @@ module.exports = function (app, passport) {
       }
 
       const token = jwt.sign(payload, secretKey, { expiresIn: '1h' })
-      jwt.verify(token, secretKey, (err, decoded) => {
-        if (err) {
-          console.log(err)
-          return res.status(401).json({ message: 'Unauthorized' });
-        }
-        console.log('decoded:>>>', decoded)
-      })
       res.status(200).json({ token })
     })(req, res)
   })

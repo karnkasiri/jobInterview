@@ -1,44 +1,83 @@
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
-const { generatePasswordHash } = require('./bcrypt.service')
+const { generatePasswordHash } = require('../utils/utils')
 
-const create = async () => {
+const create = async (user) => {
     try {
-        const passwordHash = await generatePasswordHash("1234")
+        const passwordHash = await generatePasswordHash(user.password)
         const newUser = await prisma.user.create({
             data: {
-                username: "user12345",
-                password: passwordHash,
-                email: "user2@email.com",
-                role: "admin"
+                ...user,
+                password: passwordHash
             },
-        });
+        })
         return newUser
 
     } catch (error) {
         console.log(error)
+        throw new Error(error)
     }
 }
 
-const update = async () => {
+const update = async (id, dataUpdate) => {
     try {
-
-        const newUser = await prisma.user.update({
-            where: {
-                id: id,
-            },
-            data: {
-                username: "User123"
-            },
-        });
-        return newUser
+        const updateUser = await prisma.user.update({
+            where: { id },
+            data: dataUpdate,
+        })
+        return updateUser
 
     } catch (error) {
         console.log(error)
+        throw new Error(error)
+    }
+}
+
+const deleteUser = async (id) => {
+    try {
+        const deleteUser = await prisma.user.delete({
+            where: { id }
+        })
+        return deleteUser
+
+    } catch (error) {
+        console.log(error)
+        throw new Error(error)
+    }
+}
+
+const userInfo = async (id) => {
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id }
+        })
+        return user
+
+    } catch (error) {
+        console.log(error)
+        throw new Error(error)
+    }
+}
+
+const saveSchedule = async (scheduleId, userId) => {
+    try {
+        const newUserSchedule = await prisma.userSchedule.create({
+            data: {
+                scheduleId,
+                userId
+            }
+        })
+        return newUserSchedule
+    } catch (error) {
+        console.log(error)
+        throw new Error(error)
     }
 }
 
 module.exports = {
     create,
-    update
+    update,
+    deleteUser,
+    userInfo,
+    saveSchedule
 }

@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile.postgres
     environment:
-      POSTGRES_USER: kansiri
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1234
       POSTGRES_DB: jobInterview
 
